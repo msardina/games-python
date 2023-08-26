@@ -98,22 +98,7 @@ class Entity:
         #pygame.draw.rect(self.screen , (0, 255, 255), self.rect)
         screen.blit(self.img, (self.x, self.y))
 
-class Carrota:
-    def __init__(self, x, y, width, height, img, screen):
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
-        self.screen = screen
-        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
-        self.img = img
-        
-    def move(self):
-        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
-        
-    def draw(self):
-        #pygame.draw.rect(self.screen , (0, 255, 255), self.rect)
-        screen.blit(self.img, (self.x, self.y))
+
 
     def get_rect(self):
         return self.rect
