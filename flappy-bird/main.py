@@ -20,7 +20,7 @@ pipe_u_img = pygame.image.load('assets/pipe_up.png')
 
 # Music
 
-
+flap = pygame.mixer.Sound('music/flap.mp3')
 # Vars
 
 run = True
@@ -49,6 +49,7 @@ class Bird:
         self.height = img.get_height()
         self.max_y = max_y
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        self.release = True
         
         
     def draw(self):
@@ -61,8 +62,13 @@ class Bird:
         
     def keys(self, keys):
         if keys[pygame.K_UP]:
-            self.vel = -10
-    
+            if self.release:
+                flap.play()
+                self.vel = -10
+            self.release = False
+            
+        else:
+            self.release = True
     def check_death(self):
         
         if self.y > self.max_y:
