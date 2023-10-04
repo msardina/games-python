@@ -43,8 +43,10 @@ robot_sound_1 = pygame.mixer.Sound("sounds/buzz whir.wav")
 robot_sound_2 = pygame.mixer.Sound("sounds/QSNTNC1.wav")
 robot_sound_3 = pygame.mixer.Sound("sounds/computer beeps1.wav")
 robot_sound_4 = pygame.mixer.Sound("sounds/computer beeps2.wav")
+robo_top_intro = pygame.mixer.Sound("sounds/robo-top-intro.wav")
 collect = pygame.mixer.Sound("sounds/coin.wav")
 lose_sound = pygame.mixer.Sound("sounds/lose.wav")
+robo_top_intro.play()
 
 #background_music.play(-1)
 
