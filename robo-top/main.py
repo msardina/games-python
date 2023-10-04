@@ -131,10 +131,24 @@ class Energy:
         self.height = height
         self.width = self.power
         self.start_width = start_width
+        self.color = (0, 255, 255)
         
     def draw(self):
         pygame.draw.rect(screen, (0, 0, 0), (self.x, self.y, self.start_width, self.height))
-        pygame.draw.rect(screen, (0, 255, 0), (self.x, self.y, self.width, self.height))
+        
+        # Green
+        if self.power > 100:
+            self.color = (0, 255, 0)
+            
+        # Orange
+        elif self.power > 50:
+            self.color = (255, 165, 0)
+            
+        # Red
+        else:
+            self.color = (255, 0, 0)
+            
+        pygame.draw.rect(screen, self.color, (self.x, self.y, self.width, self.height))
 
         
     def decrease_power(self):
@@ -195,6 +209,7 @@ while run:
             run = False
 
     # Text
+        # Draw
 
     score_text = font.render(f"Score: {score}", True, (0, 0, 0))
     
