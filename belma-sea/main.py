@@ -113,8 +113,7 @@ def start_screen_def():
     while start:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                start = False
-                true = False
+                pygame.quit()
                 break
             
         keys = pygame.key.get_pressed()
