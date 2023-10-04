@@ -137,7 +137,7 @@ class Energy:
         pygame.draw.rect(screen, (0, 0, 0), (self.x, self.y, self.start_width, self.height))
         
         # Green
-        if self.power > 100:
+        if self.power > 150:
             self.color = (0, 255, 0)
             
         # Orange
