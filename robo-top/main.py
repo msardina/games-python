@@ -17,6 +17,7 @@ title_font = pygame.font.SysFont(None, 100)
 # Images
 
 background_img = pygame.image.load("assets/background.png")
+start_screen = pygame.image.load("assets/start-screen.png")
 robot_img = pygame.image.load("assets/robo.png")
 robot_img_death = pygame.image.load("assets/robo-broken.png")
 bolt_img = pygame.image.load("assets/power.png")
@@ -29,7 +30,8 @@ FPS = 60
 # Variables
 
 clock = pygame.time.Clock()
-run = True
+run = False
+start = True
 power_timer = 0
 sound_timer = 0
 score = 0
@@ -146,7 +148,40 @@ power = Power(0, 0, bolt_img)
 energy = Energy((WIDTH - 220), HEIGHT - 30, 200, 20, 200)
 power.reset()
 
+# Defs
+
+def start_screen_def():
+    start = True
+    run = False
+    while start:
+        
+        for event in pygame.event.get():
+            
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                
+        # Enter
+        
+        if pygame.key.get_pressed()[pygame.K_RETURN]:
+            start = False
+            run = True
+            
+        # Draw
+        
+        screen.blit(start_screen, (0, 0))
+        
+        # Update
+        
+        pygame.display.update()
+
+
+# Start Loop
+
+start_screen_def()
+
 # Game Loop
+
+run = True
 
 while run:
     
