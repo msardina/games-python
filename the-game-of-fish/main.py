@@ -3,6 +3,7 @@
 import pygame
 import random
 from pygame import mixer
+import time
 
 # Init
 
@@ -14,17 +15,23 @@ mixer.init()
 
 background_start = pygame.image.load('assets/start-screen.png')
 level = pygame.image.load('assets/level.png')
+fish = pygame.image.load('assets/fish.png')
 
 # Variables
 
 run = False
 start = True
+timer = 0
+timer_2 = 0
+mouse_down = False
 
 # Consts
 
 WIDTH = background_start.get_width()
 HEIGHT = background_start.get_height()
 
+print(WIDTH)
+print(HEIGHT)
 
 
 # Music
@@ -48,7 +55,7 @@ class Fish_Rod:
         self.state = 'hooking'
         self.screen = screen
         
-    def draw(self):
+    def draw(self, mouse_down):
         if self.state == 'hooking':
             self.pos = pygame.mouse.get_pos()
             self.ex = self.pos[0]
@@ -57,7 +64,35 @@ class Fish_Rod:
         elif self.state == 'fishing':
             self.pos = pygame.mouse.get_pos()
             self.ex = self.pos[0]
-        pygame.draw.line(self.screen, (0, 0, 0), (self.sx, self.sy), (self.ex, self.ey), 3)
+            
+        elif self.state == 'fish getting caught':
+            print(mouse_down)
+            if self.ex < WIDTH:
+                self.ex += 0
+                
+            elif mouse_down:
+                self.ex -= 10
+
+                
+            else:
+                self.state = 'broken line'
+        
+        if not self.state == 'broken line':
+            pygame.draw.line(self.screen, (0, 0, 0), (self.sx, self.sy), (self.ex, self.ey), 3)
+            
+    def state_handler(self):
+            if self.state == 'hooking':
+                self.state = 'fishing'
+                self.ey = 650
+                
+            #elif self.state == 'fishing':
+            #    self.state = 'hooking'
+                
+            #elif self.state == 'fish getting caught':
+            #    screen.blit(fish, (self.pos[0], self.pos[1]))
+            #    pygame.display.flip()
+            #    fishing_rod.state = 'hooking'
+            
         
 
 # Start Loop
@@ -97,22 +132,36 @@ fishing_rod = Fish_Rod(260, 460, screen)
 # Game Loop
 
 while run:
+    
+    # Draw Screen    
+    screen.blit(level, (0, 0))
+    fishing_rod.draw(mouse_down)    
+    
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
     
         if event.type == pygame.MOUSEBUTTONUP:
-            if fishing_rod.state == 'hooking':
-                fishing_rod.state = 'fishing'
-                fishing_rod.ey = 650
-                
-            elif fishing_rod.state == 'fishing':
-                fishing_rod.state = 'hooking'
+            fishing_rod.state_handler()
+
+            
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            mouse_down = True
+        else:
+            mouse_down = False
+    # rasie Timer
     
-    # Draw Screen
-    
-    screen.blit(level, (0, 0))
-    fishing_rod.draw()
+    if fishing_rod.state == 'fishing':
+        timer += 0.010
+        if timer > 3:
+            print('Fish Caught')
+            timer = 0
+            fishing_rod.state = 'fish getting caught'
+            
+        
+            
+
+
     
     # Update Mouse Pos
     
