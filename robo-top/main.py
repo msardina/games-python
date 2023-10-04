@@ -34,6 +34,7 @@ run = False
 start = True
 power_timer = 0
 sound_timer = 0
+death_timer = 0
 score = 0
 
 # Music
@@ -255,6 +256,11 @@ while run:
         game_over_text = title_font.render("Game Over", True, (0, 0, 0))
         screen.blit(game_over_text, (WIDTH // 2 - 170, HEIGHT // 2 - 100))
         lose_sound.play()
+        
+        death_timer += 0.10
+        
+        if death_timer > 20:
+            start_screen_def()
         
     # Clock Tick
     clock.tick(FPS)
