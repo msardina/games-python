@@ -175,8 +175,6 @@ class Bar:
     def check_turbo(self, keys):
         if self.turbo == True:
             if keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]:
-                print("shift")
-                print(self.power)
                 if self.power > 1:
                     self.power -= 1
                     return True
