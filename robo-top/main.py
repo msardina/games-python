@@ -55,6 +55,8 @@ robo_top_intro.play()
 
 score_text = font.render("Score: {score}", True, (0, 0, 0))
 game_over_text = title_font.render("Game Over", True, (0, 0, 0))
+power_text = font.render("Power:", True, (0, 0, 0))
+turbo_text = font.render("Turbo:", True, (0, 0, 0))
 
 # Setup Screen
 
@@ -76,7 +78,8 @@ class Robot:
         self.height = self.img.get_height()
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
         self.state = "good"
-    
+        self.speed = 3
+        
     def img_state(self):
         if self.state == "good":
             self.img = self.img_good
@@ -90,16 +93,24 @@ class Robot:
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
         
         if keys[pygame.K_LEFT] and not keys[pygame.K_UP] and not keys[pygame.K_DOWN]and self.x > 70:
-            self.x -= 3
+            self.x -= self.speed
             
         if keys[pygame.K_RIGHT] and not keys[pygame.K_UP] and not keys[pygame.K_DOWN] and self.x < 831:
-            self.x += 3
+            self.x += self.speed
             
         if keys[pygame.K_UP] and not keys[pygame.K_RIGHT] and not keys[pygame.K_LEFT] and self.y > 0:
-            self.y -= 3
+            self.y -= self.speed
             
         if keys[pygame.K_DOWN] and not keys[pygame.K_RIGHT] and not keys[pygame.K_LEFT] and self.y < HEIGHT - 130:
-            self.y += 3
+            self.y += self.speed
+        
+    def speed_check(self, turbo_on):
+        
+        if turbo_on:
+            self.speed = 8
+            
+        else:
+            self.speed = 3
             
 
 class Power:
@@ -122,9 +133,9 @@ class Power:
         self.x = random.randint(70, 831)
         self.y = random.randint(0, HEIGHT - 130)
 
-class Energy:
+class Bar:
     
-    def __init__(self, x, y, power, height, start_width):
+    def __init__(self, x, y, power, height, start_width, turbo):
         self.x = x
         self.y = y
         self.power = power
@@ -132,9 +143,10 @@ class Energy:
         self.width = self.power
         self.start_width = start_width
         self.color = (0, 255, 255)
+        self.turbo = turbo
         
     def draw(self):
-        pygame.draw.rect(screen, (0, 0, 0), (self.x, self.y, self.start_width, self.height))
+        pygame.draw.rect(screen, (0, 0, 0), (self.x, self.y, 200, self.height))
         
         # Green
         if self.power > 150:
@@ -154,15 +166,28 @@ class Energy:
     def decrease_power(self):
         self.power -= 0.30
         self.width = self.power
-        
     
+    def increase_power(self):
+        if self.power < 200:
+            self.power += 0.30
+            self.width = self.power
         
-        
+    def check_turbo(self, keys):
+        if self.turbo == True:
+            if keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]:
+                print("shift")
+                print(self.power)
+                if self.power > 1:
+                    self.power -= 1
+                    return True
+            else:
+                return False
 # Objects
 
 player = Robot(WIDTH / 2, HEIGHT / 2, robot_img, robot_img_death)
 power = Power(0, 0, bolt_img)
-energy = Energy((WIDTH - 220), HEIGHT - 30, 200, 20, 200)
+energy = Bar((WIDTH - 220), HEIGHT - 30, 200, 20, 200, False)
+turbo = Bar(100, HEIGHT - 30, 0, 20, 0, True)
 power.reset()
 
 # Defs
@@ -252,21 +277,31 @@ while run:
     player.move(pygame.key.get_pressed())
     power.move()
     energy.decrease_power()
+    turbo.increase_power()
     
     # Draw Screen
     
     screen.blit(background_img, (0, 0))
+    screen.blit(power_text, ((WIDTH - 350), HEIGHT - 40,))
+    screen.blit(turbo_text, (0, HEIGHT - 40))
     player.draw()
     power.draw()
     screen.blit(score_text, (0, 0))
     energy.draw()
+    turbo.draw()
+    turbo.check_turbo(pygame.key.get_pressed())
+    
+    if turbo.check_turbo(pygame.key.get_pressed()) == True:
+        player.speed_check(True)
+    else:
+        player.speed_check(False)
     
     # Check player state
     
     player.img_state()
     
     # If death change player death
-    if energy.power < 0:
+    if energy.power <= 0:
         player.state = "Bad"
         game_over_text = title_font.render("Game Over", True, (0, 0, 0))
         screen.blit(game_over_text, (WIDTH // 2 - 170, HEIGHT // 2 - 100))
