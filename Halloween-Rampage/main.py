@@ -45,7 +45,7 @@ class Button:
         self.x = x
         self.y = y
         self.img = normal_img
-        self.state = 'normal'
+        self.hovering = False
         self.width = self.img.get_width()
         self.height = self.img.get_height()
         self.normal_img = normal_img
@@ -58,15 +58,12 @@ class Button:
         
         # Change State
         if self.rect.collidepoint(pos):
-            self.state = 'hover'
+            self.hovering = True
         else:
-            self.state = 'normal'
+            self.hovering = False
 
         # Change Img using State
-        if self.state == 'hover':
-            self.img = self.hover_img
-        else:
-            self.img = self.normal_img
+        self.img = self.hover_img if self.hovering else self.normal_img
             
         # Change size of rect
         self.width = self.img.get_width()
@@ -78,7 +75,7 @@ class Button:
         
     def click(self):
         
-        if self.state == 'hover':
+        if self.hovering == 'hover':
             
             # left button clicked
             if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
