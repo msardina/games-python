@@ -11,6 +11,8 @@ mixer.init()
 title_img = pygame.image.load('assets/title scene.png')
 start_btn = pygame.image.load("assets/play button.png")
 start_hover_btn = pygame.image.load("assets/play button hover.png")
+blank_btn = pygame.image.load('assets/blank button.png')
+blank_hover_btn = pygame.image.load('assets/blank button hover.png')
 
 # Sounds
 
@@ -21,7 +23,8 @@ sfx_msc.play(-1)
 
 # Vars
 
-run = True
+start = True
+run = False
 
 # Const
 
@@ -37,16 +40,16 @@ pygame.display.set_caption("Halloween Rampage || Halloween Special")
 
 class Button:
     
-    def __init__(self, x, y, hover, normal):
+    def __init__(self, x, y, hover_img, normal_img):
         self.clicked = False
         self.x = x
         self.y = y
-        self.img = normal
+        self.img = normal_img
         self.state = 'normal'
         self.width = self.img.get_width()
         self.height = self.img.get_height()
-        self.normal = normal
-        self.hover = hover
+        self.normal_img = normal_img
+        self.hover_img = hover_img
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
         
     def draw(self):
@@ -61,9 +64,9 @@ class Button:
 
         # Change Img using State
         if self.state == 'hover':
-            self.img = self.hover
+            self.img = self.hover_img
         else:
-            self.img = self.normal
+            self.img = self.normal_img
             
         # Change size of rect
         self.width = self.img.get_width()
@@ -76,10 +79,10 @@ class Button:
     def click(self):
         
         if self.state == 'hover':
+            
+            # left button clicked
             if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
                 self.clicked = True
-                print('click')
-
             
             if pygame.mouse.get_pressed()[0] == 0:
                 self.clicked = False
@@ -90,6 +93,38 @@ class Button:
 # Objects
 
 start_button = Button(WIDTH // 2 - 70, HEIGHT // 2, start_hover_btn, start_btn)
+blank_button = Button(WIDTH // 2 - 70, HEIGHT // 2 + 100, blank_hover_btn, blank_btn)
+blank_button_2 = Button(WIDTH // 2 - 70, HEIGHT // 2 + 200, blank_hover_btn, blank_btn)
+
+# Start Loop
+
+while start:
+
+    # Event Handler
+    for event in pygame.event.get():
+        
+        # Check for X Button
+        if event.type == pygame.QUIT:
+            pygame.quit()
+
+    # Draw
+
+    screen.blit(title_img, (0, 0))
+    start_button.draw()
+    start_button.click()
+    blank_button.draw()
+    blank_button_2.draw()
+
+    if start_button.clicked == True:
+        start = False
+        run = True
+
+    # Update
+    
+    pygame.display.update()
+
+# Fill black
+screen.fill('black')
 
 # Main Loop
 
@@ -103,12 +138,6 @@ while run:
             run = False
 
     # Draw
-
-    screen.blit(title_img, (0, 0))
-    start_button.draw()
-    #print(start_button.clicked)
-    if start_button.clicked == True:
-        run = False
 
         
     # Move
