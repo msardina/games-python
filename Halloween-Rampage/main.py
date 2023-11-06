@@ -72,10 +72,13 @@ class Button:
         
 
         screen.blit(self.img, (self.x, self.y))
+    
+    def is_clicked(self):
+        return self.clicked
         
     def click(self):
         
-        if self.hovering == 'hover':
+        if self.hovering:
             
             # left button clicked
             if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
@@ -111,8 +114,8 @@ while start:
     start_button.click()
     blank_button.draw()
     blank_button_2.draw()
-
-    if start_button.clicked == True:
+    print(start_button.is_clicked())
+    if start_button.is_clicked():
         start = False
         run = True
 
