@@ -52,7 +52,7 @@ class Button:
         self.hover_img = hover_img
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
         
-    def draw(self):
+    def update(self):
         
         pos = pygame.mouse.get_pos()
         
@@ -65,28 +65,24 @@ class Button:
         # Change Img using State
         self.img = self.hover_img if self.hovering else self.normal_img
             
-        # Change size of rect
+        # Redo rect of button
         self.width = self.img.get_width()
         self.height = self.img.get_height()
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
-        
+
+        # if hovering, check if press
+        if self.hovering:            
+            # left button clicked
+            if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
+                self.clicked = True
+                
+            if pygame.mouse.get_pressed()[0] == 0:
+                self.clicked = False
 
         screen.blit(self.img, (self.x, self.y))
     
     def is_clicked(self):
         return self.clicked
-        
-    def click(self):
-        
-        if self.hovering:
-            
-            # left button clicked
-            if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
-                self.clicked = True
-            
-            if pygame.mouse.get_pressed()[0] == 0:
-                self.clicked = False
-
 
 
         
@@ -110,11 +106,10 @@ while start:
     # Draw
 
     screen.blit(title_img, (0, 0))
-    start_button.draw()
-    start_button.click()
-    blank_button.draw()
-    blank_button_2.draw()
-    print(start_button.is_clicked())
+    start_button.update()
+    blank_button.update()
+    blank_button_2.update()
+    
     if start_button.is_clicked():
         start = False
         run = True
