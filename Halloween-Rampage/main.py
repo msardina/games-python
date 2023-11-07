@@ -16,10 +16,10 @@ blank_hover_btn = pygame.image.load('assets/blank button hover.png')
 
 # Sounds
 
-background_msc = pygame.mixer.Sound("sound/thriller.wav")
+#background_msc = pygame.mixer.Sound("sound/thriller.wav")
 sfx_msc = pygame.mixer.Sound("sound/sfx-background.wav")
-background_msc.play(-1)
-sfx_msc.play(-1)
+#background_msc.play(loops=-1, maxtime=5000)
+sfx_msc.play(loops=-1)
 
 # Vars
 
@@ -91,6 +91,7 @@ class Button:
 start_button = Button(WIDTH // 2 - 70, HEIGHT // 2, start_hover_btn, start_btn)
 blank_button = Button(WIDTH // 2 - 70, HEIGHT // 2 + 100, blank_hover_btn, blank_btn)
 blank_button_2 = Button(WIDTH // 2 - 70, HEIGHT // 2 + 200, blank_hover_btn, blank_btn)
+buttons = [start_button, blank_button, blank_button_2]
 
 # Start Loop
 
@@ -106,9 +107,9 @@ while start:
     # Draw
 
     screen.blit(title_img, (0, 0))
-    start_button.update()
-    blank_button.update()
-    blank_button_2.update()
+    
+    for button in buttons:  
+        button.update()
     
     if start_button.is_clicked():
         start = False
