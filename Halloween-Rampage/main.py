@@ -15,6 +15,10 @@ blank_btn = pygame.image.load('assets/blank button.png')
 blank_hover_btn = pygame.image.load('assets/blank button hover.png')
 ghost_img = pygame.image.load('assets/player.png')
 road_img = pygame.image.load('assets/road.png')
+yellow_candy_img = pygame.image.load('assets/yellow.png')
+purple_candy_img = pygame.image.load('assets/purple.png')
+blue_candy_img = pygame.image.load('assets/blue.png')
+green_candy_img = pygame.image.load('assets/green.png')
 
 # Sounds
 
@@ -28,6 +32,8 @@ sfx_msc.play(loops=-1)
 start = True
 run = False
 clock = pygame.time.Clock()
+candy_timer = 0
+score = 0
 
 # Const
 
@@ -38,6 +44,8 @@ FPS = 60
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Halloween Rampage || Halloween Special")
+
+# Text/Fonts
 
 # Classes
 
@@ -134,6 +142,38 @@ class ScrollingSurface:
         self.y += 2
         if self.y > HEIGHT:
             self.y = HEIGHT * -1
+
+class Candy:
+    
+    def __init__(self, x, y, img):
+        
+        self.x = x
+        self.y = y
+        self.img = img
+        self.width = self.img.get_width()
+        self.height = self.img.get_height()
+        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        
+    def draw(self):
+        screen.blit(self.img, (self.x, self.y))
+        
+    def reset(self):
+        self.y = 0
+        self.x = random.randint(90, 550)
+        
+    def move(self):
+        self.y += 2
+        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+
+        if self.y > HEIGHT:
+            self.reset()
+    
+    def collide(self, player):
+        
+        if pygame.Rect.colliderect(self.rect, player):
+            self.reset()
+            
+            
         
 # Objects
 
@@ -144,6 +184,8 @@ buttons = [start_button, blank_button, blank_button_2]
 player = Player(WIDTH // 2, 300, ghost_img)
 road = ScrollingSurface(0, 0, road_img)
 road_2 = ScrollingSurface(0, HEIGHT * -1, road_img)
+candys = [Candy(random.randint(90, 550), 0, yellow_candy_img), Candy(random.randint(90, 550), 0, green_candy_img), Candy(random.randint(90, 550), 0, purple_candy_img), Candy(random.randint(90, 550), 0, blue_candy_img), Candy(random.randint(90, 550), 0, yellow_candy_img), Candy(random.randint(90, 550), 0, green_candy_img), Candy(random.randint(90, 550), 0, purple_candy_img), Candy(random.randint(90, 550), 0, blue_candy_img)]
+pygame.draw.rect(screen, (0, 0, 0), (0, 0, 300, 100))
 
 # Start Loop
 
@@ -190,13 +232,21 @@ while run:
     road.draw()
     road_2.draw()
     player.draw()
-    
+    for candy in candys:
+        candy.draw()
+        candy.move()
+        candy.collide(player.rect)
+        
     # Move
     
 
     player.move(pygame.key.get_pressed())
     road.move()
     road_2.move()
+
+    # Candy timer
+    
+
     
     # Update
     
