@@ -13,6 +13,8 @@ start_btn = pygame.image.load("assets/play button.png")
 start_hover_btn = pygame.image.load("assets/play button hover.png")
 blank_btn = pygame.image.load('assets/blank button.png')
 blank_hover_btn = pygame.image.load('assets/blank button hover.png')
+ghost_img = pygame.image.load('assets/player.png')
+road_img = pygame.image.load('assets/road.png')
 
 # Sounds
 
@@ -25,12 +27,13 @@ sfx_msc.play(loops=-1)
 
 start = True
 run = False
+clock = pygame.time.Clock()
 
 # Const
 
 WIDTH = title_img.get_width()
 HEIGHT = title_img.get_height()
-
+FPS = 60
 # Setup Screen
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -84,7 +87,53 @@ class Button:
     def is_clicked(self):
         return self.clicked
 
-
+class Player:
+    
+    def __init__(self, x, y, img):
+        
+        self.x = x
+        self.y = y
+        self.img = img
+        self.width = self.img.get_width()
+        self.height = self.img.get_height()
+        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        
+    def draw(self):
+        screen.blit(self.img, (self.x, self.y))
+        
+    def move(self, keys):
+        
+        if keys[pygame.K_UP]:
+            self.y -= 4
+            
+        if keys[pygame.K_DOWN]:
+            self.y += 4
+        
+        if keys[pygame.K_RIGHT]:
+            self.x += 4
+            
+        if keys[pygame.K_LEFT]:
+            self.x -= 4
+        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        
+class ScrollingSurface:
+    
+    def __init__(self, x, y, img):
+        
+        self.x = x
+        self.y = y
+        self.img = img
+        self.width = self.img.get_width()
+        self.height = self.img.get_height()
+        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        
+    def draw(self):
+        screen.blit(self.img, (self.x, self.y))
+        
+    def move(self):
+        self.y += 2
+        if self.y > HEIGHT:
+            self.y = HEIGHT * -1
         
 # Objects
 
@@ -92,6 +141,9 @@ start_button = Button(WIDTH // 2 - 70, HEIGHT // 2, start_hover_btn, start_btn)
 blank_button = Button(WIDTH // 2 - 70, HEIGHT // 2 + 100, blank_hover_btn, blank_btn)
 blank_button_2 = Button(WIDTH // 2 - 70, HEIGHT // 2 + 200, blank_hover_btn, blank_btn)
 buttons = [start_button, blank_button, blank_button_2]
+player = Player(WIDTH // 2, 300, ghost_img)
+road = ScrollingSurface(0, 0, road_img)
+road_2 = ScrollingSurface(0, HEIGHT * -1, road_img)
 
 # Start Loop
 
@@ -134,12 +186,21 @@ while run:
             run = False
 
     # Draw
-
-        
+    
+    road.draw()
+    road_2.draw()
+    player.draw()
+    
     # Move
+    
+
+    player.move(pygame.key.get_pressed())
+    road.move()
+    road_2.move()
     
     # Update
     
+    clock.tick(FPS)
     pygame.display.update()
     
 pygame.quit()
