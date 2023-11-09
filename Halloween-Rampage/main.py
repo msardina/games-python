@@ -47,6 +47,9 @@ pygame.display.set_caption("Halloween Rampage || Halloween Special")
 
 # Text/Fonts
 
+font = pygame.font.SysFont(None, 50)
+title_font = pygame.font.SysFont(None, 100)
+
 # Classes
 
 class Button:
@@ -172,6 +175,7 @@ class Candy:
         
         if pygame.Rect.colliderect(self.rect, player):
             self.reset()
+            return True
             
             
         
@@ -184,7 +188,7 @@ buttons = [start_button, blank_button, blank_button_2]
 player = Player(WIDTH // 2, 300, ghost_img)
 road = ScrollingSurface(0, 0, road_img)
 road_2 = ScrollingSurface(0, HEIGHT * -1, road_img)
-candys = [Candy(random.randint(90, 550), 0, yellow_candy_img), Candy(random.randint(90, 550), 0, green_candy_img), Candy(random.randint(90, 550), 0, purple_candy_img), Candy(random.randint(90, 550), 0, blue_candy_img), Candy(random.randint(90, 550), 0, yellow_candy_img), Candy(random.randint(90, 550), 0, green_candy_img), Candy(random.randint(90, 550), 0, purple_candy_img), Candy(random.randint(90, 550), 0, blue_candy_img)]
+candys = [Candy(WIDTH // 2, 0, yellow_candy_img), Candy(WIDTH // 2, 0, green_candy_img), Candy(WIDTH // 2, 0, purple_candy_img), Candy(WIDTH // 2, 0, blue_candy_img), Candy(random.randint(90, 550), 0, yellow_candy_img), Candy(WIDTH // 2, 0, green_candy_img), Candy(WIDTH // 2, 0, purple_candy_img), Candy(WIDTH // 2, 0, blue_candy_img)]
 pygame.draw.rect(screen, (0, 0, 0), (0, 0, 300, 100))
 
 # Start Loop
@@ -227,15 +231,23 @@ while run:
         if event.type == pygame.QUIT:
             run = False
 
+    # Candy score
+    
+    score_txt = font.render(f'{score}', True, (0, 0, 0))
+    
     # Draw
     
     road.draw()
     road_2.draw()
     player.draw()
+    screen.blit(score_txt, (WIDTH // 2, HEIGHT - 50))
+    
     for candy in candys:
         candy.draw()
         candy.move()
         candy.collide(player.rect)
+        if candy.collide(player.rect):
+            score += 5
         
     # Move
     
@@ -244,8 +256,6 @@ while run:
     road.move()
     road_2.move()
 
-    # Candy timer
-    
 
     
     # Update
