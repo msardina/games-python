@@ -2,6 +2,7 @@
 
 import pygame
 import random
+import time
 from pygame import mixer
 pygame.init()
 mixer.init()
@@ -37,6 +38,8 @@ run = False
 clock = pygame.time.Clock()
 candy_timer = 0
 score = 0
+loss_timer = 0
+loss = False
 
 # Const
 
@@ -273,6 +276,7 @@ while run:
     # Candy score
     
     score_txt = font.render(f'{score}', True, (0, 0, 0))
+    lose_txt = title_font.render(f'GAME OVER', True, (0, 0, 0))
     
     # Draw
     
@@ -301,11 +305,16 @@ while run:
 
     player.move(pygame.key.get_pressed())
     if player.collide(car.rect):
-        run = False
+        loss = True    
+            
     if player.collide(sign.rect):
-        run = False
+        loss = True
+            
     if player.collide(pumpkin.rect):
-        run = False
+        
+        loss = True
+            
+
         
     road.move()
     road_2.move()
@@ -316,6 +325,14 @@ while run:
     pumpkin.move()
     pumpkin.off_level()
     
+    
+    # Death Timer
+    
+    if loss == True:
+        loss_timer += 0.010
+        screen.blit(lose_txt, (WIDTH // 2 - 200, HEIGHT // 2))
+        if loss_timer > 2:
+                run = False
     # Update
     
     clock.tick(FPS)
