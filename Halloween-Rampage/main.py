@@ -19,6 +19,9 @@ yellow_candy_img = pygame.image.load('assets/yellow.png')
 purple_candy_img = pygame.image.load('assets/purple.png')
 blue_candy_img = pygame.image.load('assets/blue.png')
 green_candy_img = pygame.image.load('assets/green.png')
+car_img = pygame.image.load('assets/car.png')
+sign_img = pygame.image.load('assets/sign.png')
+pumpkin_img = pygame.image.load('assets/pumpkin.png')
 
 # Sounds
 
@@ -127,6 +130,12 @@ class Player:
             self.x -= 4
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
         
+    def collide(self, rect):
+        
+        if pygame.Rect.colliderect(self.rect, rect):
+            return True
+        else:
+            return False
 class ScrollingSurface:
     
     def __init__(self, x, y, img):
@@ -177,8 +186,31 @@ class Candy:
             self.reset()
             return True
             
-            
+class Obstacle:
+    
+    def __init__(self, x, y, img):
+        self.x = x
+        self.y = y
+        self.img = img
+        self.width = img.get_width()
+        self.height = img.get_height()
+        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
         
+    def draw(self):
+        screen.blit(self.img, (self.x, self.y))
+        
+    def move(self):
+        if self.img == car_img:
+            self.y += 2
+        else:
+            self.y += 2
+        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+    
+    def off_level(self):
+        if self.y > HEIGHT:
+            self.y = 0
+            self.x = random.randint(90, 550)
+    
 # Objects
 
 start_button = Button(WIDTH // 2 - 70, HEIGHT // 2, start_hover_btn, start_btn)
@@ -189,8 +221,12 @@ player = Player(WIDTH // 2, 300, ghost_img)
 road = ScrollingSurface(0, 0, road_img)
 road_2 = ScrollingSurface(0, HEIGHT * -1, road_img)
 candys = [Candy(WIDTH // 2, 0, yellow_candy_img), Candy(WIDTH // 2, 0, green_candy_img), Candy(WIDTH // 2, 0, purple_candy_img), Candy(WIDTH // 2, 0, blue_candy_img), Candy(random.randint(90, 550), 0, yellow_candy_img), Candy(WIDTH // 2, 0, green_candy_img), Candy(WIDTH // 2, 0, purple_candy_img), Candy(WIDTH // 2, 0, blue_candy_img)]
-pygame.draw.rect(screen, (0, 0, 0), (0, 0, 300, 100))
+car = Obstacle(random.randint(90, 550), 0, car_img)
+sign = Obstacle(random.randint(90, 550), -300, sign_img)
+pumpkin = Obstacle(random.randint(90, 550), -500, pumpkin_img)
 
+
+    
 # Start Loop
 
 while start:
@@ -217,8 +253,11 @@ while start:
     
     pygame.display.update()
 
+
 # Fill black
 screen.fill('black')
+
+run = True
 
 # Main Loop
 
@@ -240,23 +279,42 @@ while run:
     road.draw()
     road_2.draw()
     player.draw()
+    car.draw()
+    sign.draw()
+    pumpkin.draw()
     screen.blit(score_txt, (WIDTH // 2, HEIGHT - 50))
     
     for candy in candys:
         candy.draw()
         candy.move()
         candy.collide(player.rect)
+        candy.collide(car.rect)
+        candy.collide(pumpkin.rect)
+        candy.collide(sign.rect)
         if candy.collide(player.rect):
             score += 5
+
+
         
     # Move
     
 
     player.move(pygame.key.get_pressed())
+    if player.collide(car.rect):
+        run = False
+    if player.collide(sign.rect):
+        run = False
+    if player.collide(pumpkin.rect):
+        run = False
+        
     road.move()
     road_2.move()
-
-
+    car.move()
+    car.off_level()
+    sign.move()
+    sign.off_level()
+    pumpkin.move()
+    pumpkin.off_level()
     
     # Update
     
