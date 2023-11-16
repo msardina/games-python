@@ -23,11 +23,15 @@ green_candy_img = pygame.image.load('assets/green.png')
 car_img = pygame.image.load('assets/car.png')
 sign_img = pygame.image.load('assets/sign.png')
 pumpkin_img = pygame.image.load('assets/pumpkin.png')
+king_pumpkin_img = pygame.image.load('assets/boss.png')
+credits_img = pygame.transform.scale(pygame.image.load('assets/credits.png'), (500, 800))
 
 # Sounds
 
 #background_msc = pygame.mixer.Sound("sound/thriller.wav")
 sfx_msc = pygame.mixer.Sound("sound/sfx-background.wav")
+lose_snd = pygame.mixer.Sound('sound/lose.wav')
+credits_msc = pygame.mixer.Sound('sound/credits.wav')
 #background_msc.play(loops=-1, maxtime=5000)
 sfx_msc.play(loops=-1)
 
@@ -40,6 +44,7 @@ candy_timer = 0
 score = 0
 loss_timer = 0
 loss = False
+boss_fight = False
 
 # Const
 
@@ -139,6 +144,7 @@ class Player:
             return True
         else:
             return False
+        
 class ScrollingSurface:
     
     def __init__(self, x, y, img):
@@ -153,8 +159,10 @@ class ScrollingSurface:
     def draw(self):
         screen.blit(self.img, (self.x, self.y))
         
-    def move(self):
-        self.y += 2
+    def move(self, speed):
+        self.y += speed
+        
+    def off_screen(self):
         if self.y > HEIGHT:
             self.y = HEIGHT * -1
 
@@ -209,11 +217,35 @@ class Obstacle:
             self.y += 2
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
     
+    def reset(self):
+        self.y = 0
+        self.x = random.randint(90, 550)
+        
     def off_level(self):
         if self.y > HEIGHT:
-            self.y = 0
-            self.x = random.randint(90, 550)
+            self.reset()
+
+    def collide(self, rect):
+        
+        if pygame.Rect.colliderect(self.rect, rect):
+            self.reset()
+            return True
+class Boss:
     
+    def __init__(self, x, y, img):
+        self.x = x
+        self.y = y
+        self.img = img
+        self.width = img.get_width()
+        self.height = img.get_height()
+        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        
+    def draw(self):
+        screen.blit(self.img, (self.x, self.y))
+    
+    def move(self):
+        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+
 # Objects
 
 start_button = Button(WIDTH // 2 - 70, HEIGHT // 2, start_hover_btn, start_btn)
@@ -227,8 +259,8 @@ candys = [Candy(WIDTH // 2, 0, yellow_candy_img), Candy(WIDTH // 2, 0, green_can
 car = Obstacle(random.randint(90, 550), 0, car_img)
 sign = Obstacle(random.randint(90, 550), -300, sign_img)
 pumpkin = Obstacle(random.randint(90, 550), -500, pumpkin_img)
-
-
+king_pumpkin = Boss(WIDTH // 2 - 45, 0, king_pumpkin_img)
+credits = ScrollingSurface(0, HEIGHT - 50, credits_img)
     
 # Start Loop
 
@@ -282,22 +314,43 @@ while run:
     
     road.draw()
     road_2.draw()
-    player.draw()
-    car.draw()
-    sign.draw()
-    pumpkin.draw()
-    screen.blit(score_txt, (WIDTH // 2, HEIGHT - 50))
     
-    for candy in candys:
-        candy.draw()
-        candy.move()
-        candy.collide(player.rect)
-        candy.collide(car.rect)
-        candy.collide(pumpkin.rect)
-        candy.collide(sign.rect)
-        if candy.collide(player.rect):
-            score += 5
+    if score > 500:
+        king_pumpkin.draw()
+        
+    if score > 1000:
+        run = False
+        
+    if boss_fight == False:
+        car.draw()
+        sign.draw()
+        pumpkin.draw()
+        car.collide(king_pumpkin.rect)
+        car.collide(player.rect)
+        sign.collide(king_pumpkin.rect)
+        sign.collide(player.rect)
+        pumpkin.collide(king_pumpkin.rect)
+        pumpkin.collide(player.rect)
+        
+        if player.collide(king_pumpkin.rect):
+            loss = True
+            
+        for candy in candys:
 
+            candy.draw()
+            candy.move()
+            candy.collide(player.rect)
+            candy.collide(car.rect)
+            candy.collide(pumpkin.rect)
+            candy.collide(sign.rect)
+            candy.collide(king_pumpkin.rect)
+            if candy.collide(player.rect):
+                score += 5
+                
+                
+            
+    player.draw()
+    screen.blit(score_txt, (WIDTH // 2, HEIGHT - 50))
 
         
     # Move
@@ -316,8 +369,10 @@ while run:
             
 
         
-    road.move()
-    road_2.move()
+    road.move(2)
+    road_2.move(2)
+    road.off_screen()
+    road_2.off_screen()
     car.move()
     car.off_level()
     sign.move()
@@ -329,14 +384,61 @@ while run:
     # Death Timer
     
     if loss == True:
+        lose_snd.play()
         loss_timer += 0.010
         screen.blit(lose_txt, (WIDTH // 2 - 200, HEIGHT // 2))
         if loss_timer > 2:
-                run = False
+                pygame.quit()
+                
     # Update
     
     clock.tick(FPS)
     pygame.display.update()
     
-pygame.quit()
-quit()
+    
+
+# Roll Credits
+
+sfx_msc.stop()
+credits_msc.play(loops=-1)
+
+while True:
+    
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+
+    # Screen FIll
+    
+    screen.fill('black')
+    credits.draw()
+    
+    # Screen Move
+    
+    credits.move(-0.50)
+    
+    # Screen Update
+    
+    clock.tick(FPS)
+    pygame.display.update()
+    
+
+
+##### Thanks ######
+
+# Thanks for playing and Viewing "Halloween Rampage"
+# It has been so fun making this game! Its my first ever finished game!
+# It actually has Credits and an Ending!
+
+##### Reflection ######
+
+# I learnt so much in this project!
+# It still has lots of improvements to go in its life!
+# I learnt about Transform, Buttons, CollidePoint, Mouses, Clicking, Scrolling Surfaces and I even made a credits scene!
+# I think this was a good investment and this game has a still got a long way to go!
+
+# By Marcos Sardina
+# "Halloween Rampage"
+
+
+# THE END
