@@ -303,7 +303,7 @@ while run:
         
         # Check for X Button
         if event.type == pygame.QUIT:
-            run = False
+            pygame.quit()
 
     # Candy score
     
