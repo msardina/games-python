@@ -7,6 +7,7 @@ from pygame import mixer
 pygame.init()
 mixer.init()
 
+
 # Images
 
 title_img = pygame.image.load('assets/title scene.png')
@@ -36,6 +37,7 @@ candy_img = pygame.image.load('assets/candy.png')
 sfx_msc = pygame.mixer.Sound("sound/sfx-background.wav")
 lose_snd = pygame.mixer.Sound('sound/lose.wav')
 credits_msc = pygame.mixer.Sound('sound/credits.wav')
+hit_snd = pygame.mixer.Sound('sound/hit.wav')
 #background_msc.play(loops=-1, maxtime=5000)
 sfx_msc.play(loops=-1)
 
@@ -381,16 +383,19 @@ while run:
         lives -= 1
         player.x = WIDTH // 2
         player.y = 600
+        hit_snd.play()
         
     if player.collide(sign.rect):
         lives -= 1
         player.x = WIDTH // 2
         player.y = 600
+        hit_snd.play()
         
     if player.collide(pumpkin.rect):
         lives -= 1
         player.x = WIDTH // 2
         player.y = 600
+        hit_snd.play()
         
     if lives == 0:
         loss = True
