@@ -25,6 +25,9 @@ sign_img = pygame.image.load('assets/sign.png')
 pumpkin_img = pygame.image.load('assets/pumpkin.png')
 king_pumpkin_img = pygame.image.load('assets/boss.png')
 credits_img = pygame.transform.scale(pygame.image.load('assets/credits.png'), (500, 800))
+one_life_img = pygame.image.load('assets/1 lives.png')
+two_lives_img = pygame.image.load('assets/2 lives.png')
+three_lives_img = pygame.image.load('assets/3 lives.png')
 
 # Sounds
 
@@ -45,6 +48,7 @@ score = 0
 loss_timer = 0
 loss = False
 boss_fight = False
+lives = 3
 
 # Const
 
@@ -247,13 +251,25 @@ class Boss:
     def move(self):
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
 
+class Lives:
+    
+    def __init__(self, x, y, imgs):
+        self.x = x
+        self.y = y
+        self.imgs = imgs
+        
+    def draw(self, lives, dead):
+        if not dead:
+            lives = lives - 1
+        screen.blit(self.imgs[lives], (self.x, self.y))
+        
 # Objects
 
 start_button = Button(WIDTH // 2 - 70, HEIGHT // 2, start_hover_btn, start_btn)
 blank_button = Button(WIDTH // 2 - 70, HEIGHT // 2 + 100, blank_hover_btn, blank_btn)
 blank_button_2 = Button(WIDTH // 2 - 70, HEIGHT // 2 + 200, blank_hover_btn, blank_btn)
 buttons = [start_button, blank_button, blank_button_2]
-player = Player(WIDTH // 2, 300, ghost_img)
+player = Player(WIDTH // 2, 600, ghost_img)
 road = ScrollingSurface(0, 0, road_img)
 road_2 = ScrollingSurface(0, HEIGHT * -1, road_img)
 candys = [Candy(WIDTH // 2, 0, yellow_candy_img), Candy(WIDTH // 2, 0, green_candy_img), Candy(WIDTH // 2, 0, purple_candy_img), Candy(WIDTH // 2, 0, blue_candy_img), Candy(random.randint(90, 550), 0, yellow_candy_img), Candy(WIDTH // 2, 0, green_candy_img), Candy(WIDTH // 2, 0, purple_candy_img), Candy(WIDTH // 2, 0, blue_candy_img)]
@@ -262,7 +278,8 @@ sign = Obstacle(random.randint(90, 550), -300, sign_img)
 pumpkin = Obstacle(random.randint(90, 550), -500, pumpkin_img)
 king_pumpkin = Boss(WIDTH // 2 - 45, 0, king_pumpkin_img)
 credits = ScrollingSurface(0, HEIGHT - 50, credits_img)
-    
+hearts = Lives(WIDTH - 200, HEIGHT - 100, [one_life_img, two_lives_img, three_lives_img])
+
 # Start Loop
 
 while start:
@@ -351,6 +368,7 @@ while run:
                 
             
     player.draw()
+    hearts.draw(lives, loss)
     screen.blit(score_txt, (WIDTH // 2, HEIGHT - 50))
 
         
@@ -359,15 +377,22 @@ while run:
 
     player.move(pygame.key.get_pressed())
     if player.collide(car.rect):
-        loss = True    
-            
-    if player.collide(sign.rect):
-        loss = True
-            
-    if player.collide(pumpkin.rect):
+        lives -= 1
+        player.x = WIDTH // 2
+        player.y = 600
         
+    if player.collide(sign.rect):
+        lives -= 1
+        player.x = WIDTH // 2
+        player.y = 600
+        
+    if player.collide(pumpkin.rect):
+        lives -= 1
+        player.x = WIDTH // 2
+        player.y = 600
+        
+    if lives == 0:
         loss = True
-            
 
         
     road.move(2)
