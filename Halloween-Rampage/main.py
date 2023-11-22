@@ -28,6 +28,7 @@ credits_img = pygame.transform.scale(pygame.image.load('assets/credits.png'), (5
 one_life_img = pygame.image.load('assets/1 lives.png')
 two_lives_img = pygame.image.load('assets/2 lives.png')
 three_lives_img = pygame.image.load('assets/3 lives.png')
+candy_img = pygame.image.load('assets/candy.png')
 
 # Sounds
 
@@ -369,8 +370,8 @@ while run:
             
     player.draw()
     hearts.draw(lives, loss)
-    screen.blit(score_txt, (WIDTH // 2, HEIGHT - 50))
-
+    screen.blit(score_txt, (130, HEIGHT - 100))
+    screen.blit(candy_img, (30, HEIGHT - 100))
         
     # Move
     
