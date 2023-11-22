@@ -181,7 +181,7 @@ class Candy:
         screen.blit(self.img, (self.x, self.y))
         
     def reset(self):
-        self.y = 0
+        self.y = self.height * -1
         self.x = random.randint(90, 550)
         
     def move(self):
@@ -218,7 +218,7 @@ class Obstacle:
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
     
     def reset(self):
-        self.y = 0
+        self.y = self.height * -1
         self.x = random.randint(90, 550)
         
     def off_level(self):
@@ -230,6 +230,7 @@ class Obstacle:
         if pygame.Rect.colliderect(self.rect, rect):
             self.reset()
             return True
+        
 class Boss:
     
     def __init__(self, x, y, img):
