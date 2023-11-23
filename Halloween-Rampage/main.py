@@ -340,10 +340,10 @@ while run:
     road.draw()
     road_2.draw()
     
-    if score > 1:
+    if score > 500:
         king_pumpkin.draw()
         
-    if score > 1:
+    if score > 1000:
         run = False
         
     if boss_fight == False:
