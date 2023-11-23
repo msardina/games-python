@@ -30,6 +30,9 @@ one_life_img = pygame.image.load('assets/1 lives.png')
 two_lives_img = pygame.image.load('assets/2 lives.png')
 three_lives_img = pygame.image.load('assets/3 lives.png')
 candy_img = pygame.image.load('assets/candy.png')
+dare_img = pygame.image.load('assets/dareyou.png')
+roll_img = pygame.image.load('assets/roll.png')
+end_img = pygame.image.load('assets/end.png')
 
 # Sounds
 
@@ -52,6 +55,7 @@ loss_timer = 0
 loss = False
 boss_fight = False
 lives = 3
+scene = False
 
 # Const
 
@@ -336,10 +340,10 @@ while run:
     road.draw()
     road_2.draw()
     
-    if score > 500:
+    if score > 1:
         king_pumpkin.draw()
         
-    if score > 1000:
+    if score > 1:
         run = False
         
     if boss_fight == False:
@@ -427,8 +431,40 @@ while run:
     clock.tick(FPS)
     pygame.display.update()
     
-    
 
+scene_counter = 0
+scenes = [dare_img, roll_img, end_img]
+scene = True
+
+# Ending Scene
+
+while scene:
+    
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+    
+    # Draw Screen
+    screen.blit(scenes[scene_counter], (0, 0))
+    
+    # Collect Keys
+    
+    keys = pygame.key.get_pressed()
+    
+    # Change Scene
+    
+    if keys[pygame.K_SPACE]:
+        scene_counter += 1
+    
+    if scene_counter > 1:
+        scene = False
+        
+    # Update
+    pygame.display.update()
+
+screen.fill('black')
+time.sleep(3)
+    
 # Roll Credits
 
 sfx_msc.stop()
