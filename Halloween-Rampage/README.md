@@ -6,7 +6,7 @@
 Halloween Rampage is a game where you the player, as a ghost named Billy try and steal all the candy from the town! One problem though theres lots of Candy! Its going to be very hard...
 
 Billy is scared of pumpkins, trucks and sings that he can hit his head on!
-The town caught on and made KING PUMPKIN who protects the candy! 
+Once you steal 500 candy, The town catches on and knows about your quest to steal the candy!They made KING PUMPKIN who protects the candy! 
 Can you help Billy?
 
 ## Controls
