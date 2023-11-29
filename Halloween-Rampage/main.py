@@ -343,7 +343,7 @@ while run:
     if score > 500:
         king_pumpkin.draw()
         
-    if score > 1000:
+    if score > 100:
         run = False
         
     if boss_fight == False:
@@ -438,33 +438,22 @@ scene = True
 
 # Ending Scene
 
-while scene:
-    
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-    
-    # Draw Screen
-    screen.blit(scenes[scene_counter], (0, 0))
-    
-    # Collect Keys
-    
-    keys = pygame.key.get_pressed()
-    
-    # Change Scene
-    
-    if keys[pygame.K_SPACE]:
-        scene_counter += 1
-    
-    if scene_counter > 1:
-        scene = False
-        
-    # Update
-    pygame.display.update()
-
 screen.fill('black')
+pygame.display.update()
+time.sleep(1)
+screen.blit(dare_img, (0, 0))
+pygame.display.update()
+time.sleep(5)
+screen.blit(roll_img, (0, 0))
+pygame.display.update()
+time.sleep(5)
+screen.blit(end_img, (0, 0))
+pygame.display.update()
 time.sleep(3)
-    
+screen.fill('black')
+pygame.display.update()
+time.sleep(2)
+
 # Roll Credits
 
 sfx_msc.stop()
