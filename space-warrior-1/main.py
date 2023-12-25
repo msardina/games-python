@@ -2,6 +2,7 @@
 import pygame
 import random
 import time
+from pygame import transform
 from pygame import mixer
 pygame.init()
 mixer.init()
@@ -15,9 +16,11 @@ FPS = 60
 run = True
 clock = pygame.time.Clock()
 
+
 # imgs
 alien_img = pygame.image.load('assets/alien.png')
 player_img = pygame.image.load('assets/spaceman.png')
+level_img = pygame.transform.scale(pygame.image.load('assets/level.png'), (10000, 1300))
 
 # sounds
 
@@ -51,9 +54,11 @@ class Player:
         if keys[pygame.K_DOWN]:
             self.dy += 0.75
         if keys[pygame.K_RIGHT]:
-            self.dx += 0.75
+            if player.x < WIDTH - 400:
+                self.dx += 0.75
         if keys[pygame.K_LEFT]:
-            self.dx -= 0.75
+            if player.x > 100:
+                self.dx -= 0.75
             
         self.x += self.dx
         self.y += self.dy
@@ -83,12 +88,26 @@ class Obstacle:
         
     def move(self):
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+
+class ScrollingSurface:
+    def __init__(self, x, y, img):
+        self.x = x
+        self.y = y
+        self.img = img
+        
+    def draw(self):
+        screen.blit(self.img, (self.x, self.y))
+        
+    def move(self, dx, dy):
+        self.x += dx
+        self.y += dy
         
 # objects
 
 player = Player(100, HEIGHT // 2, player_img)
 alien = Obstacle(WIDTH // 2, HEIGHT // 2, alien_img)
 obstacles = [alien]
+level = ScrollingSurface(0, 0, level_img)
 
 # main loop
 
@@ -98,13 +117,23 @@ while run:
             run = False
 
     # draw screen
-    screen.fill((0, 0, 40))
+    level.draw()
     player.draw()
     alien.draw()
     
     # move screen
     player.move(pygame.key.get_pressed(), 4)
     alien.move()
+    
+    if level.x < -8500:
+        level.move(0, 0)
+    elif player.x > WIDTH - 400:
+        level.move(-10, 0)     
+    elif player.x < 200:
+        level.move(-3, 0)
+    else:
+        level.move(-5, 0)
+
     
     # collision
     if player.collision(obstacles)[1] == True:
