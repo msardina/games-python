@@ -39,19 +39,26 @@ class Player:
         self.width = self.img.get_width()
         self.height = self.img.get_height()
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        self.dx = 0
+        self.dy = 0
         
     def draw(self):
         screen.blit(self.img, (self.x, self.y))
         
     def move(self, keys, speed):
         if keys[pygame.K_UP]:
-            self.y -= speed
+            self.dy -= 0.75
         if keys[pygame.K_DOWN]:
-            self.y += speed
+            self.dy += 0.75
         if keys[pygame.K_RIGHT]:
-            self.x += speed
+            self.dx += 0.75
         if keys[pygame.K_LEFT]:
-            self.x -= speed
+            self.dx -= 0.75
+            
+        self.x += self.dx
+        self.y += self.dy
+        self.dx  = self.dx * 0.9
+        self.dy = self.dy * 0.9
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
         
     def collision(self, obstacles):
@@ -91,7 +98,7 @@ while run:
             run = False
 
     # draw screen
-    screen.fill((0, 0, 20))
+    screen.fill((0, 0, 40))
     player.draw()
     alien.draw()
     
