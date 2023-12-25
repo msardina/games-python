@@ -7,7 +7,6 @@ from pygame import mixer
 pygame.init()
 mixer.init()
 
-
 # Images
 
 title_img = pygame.image.load('assets/title scene.png')
@@ -343,7 +342,7 @@ while run:
     if score > 500:
         king_pumpkin.draw()
         
-    if score > 100:
+    if score > 1000:
         run = False
         
     if boss_fight == False:
@@ -415,7 +414,11 @@ while run:
     sign.off_level()
     pumpkin.move()
     pumpkin.off_level()
+                
+    # Update
     
+    clock.tick(FPS)
+    pygame.display.update()
     
     # Death Timer
     
@@ -425,11 +428,6 @@ while run:
         screen.blit(lose_txt, (WIDTH // 2 - 200, HEIGHT // 2))
         if loss_timer > 2:
                 pygame.quit()
-                
-    # Update
-    
-    clock.tick(FPS)
-    pygame.display.update()
     
 
 scene_counter = 0
