@@ -19,6 +19,7 @@ loss = False
 lives = 3
 boss_fight = False
 oxygen = 100
+game_over = False
 
 # imgs
 alien_img = pygame.image.load('assets/alien.png')
@@ -28,11 +29,14 @@ one_life_img = pygame.image.load('assets/1 lives.png')
 two_life_img = pygame.image.load('assets/2 lives.png')
 three_life_img = pygame.image.load('assets/3 lives.png')
 air_img = pygame.image.load('assets/air.png')
+game_over_screen = pygame.image.load('assets/game over.png')
 
 # sounds
 
 backround_msc = pygame.mixer.Sound('sound/background.wav')
 collect_sfx = pygame.mixer.Sound('sound/collect.wav')
+lose_sfx = pygame.mixer.Sound('sound/lose.wav')
+#no_air = pygame.mixer.Sound('sound/no air.wav')
 backround_msc.play(-1)
 
 # setup screen
@@ -265,6 +269,7 @@ while run:
         
     if oxygen_bar.power < 0:
         loss = True
+        no_air.play()
         
     # end game
     
@@ -275,7 +280,27 @@ while run:
     # update screen
     clock.tick(FPS)
     pygame.display.update()
+
+if loss == True:
+    game_over = True
+    lose_sfx.play()
     
+while game_over:
+    backround_msc.stop()
+
+    # Draw
+    screen.fill('black')
+    screen.blit(game_over_screen, (0, 0))
+    
+    # Update
+    
+    pygame.display.update()
+    
+    # Events
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            quit()
 # quit game
 pygame.quit()
 quit()
