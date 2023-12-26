@@ -319,15 +319,21 @@ screen.fill('black')
 run = True
 
 # Main Loop
-
 while run:
-    # Candy score
-    
+    # Event Handler
+    if loss == False:
+        for event in pygame.event.get():
+            # Check for X Button
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                run = False
+                continue
+                
+    # Candy score    
     score_txt = font.render(f'{score}', True, (0, 0, 0))
     lose_txt = title_font.render(f'GAME OVER', True, (0, 0, 0))
     
-    # Draw
-    
+    # Draw    
     road.draw()
     road_2.draw()
     
@@ -336,7 +342,8 @@ while run:
         
     if score > 1000:
         run = False
-        
+        continue
+    
     if boss_fight == False:
         car.draw()
         sign.draw()
@@ -420,65 +427,60 @@ while run:
         screen.blit(lose_txt, (WIDTH // 2 - 200, HEIGHT // 2))
         if loss_timer > 2:
                 pygame.quit()
+                run = False
 
-    # Event Handler
+
+# if the main loop is exited because of winning
+
+if not loss:
+    scene_counter = 0
+    scenes = [dare_img, roll_img, end_img]
+    scene = True
+
+    # Ending Scene
+
+    screen.fill('black')
+    pygame.display.update()
+    time.sleep(1)
+    screen.blit(dare_img, (0, 0))
+    pygame.display.update()
+    time.sleep(5)
+    screen.blit(roll_img, (0, 0))
+    pygame.display.update()
+    time.sleep(5)
+    screen.blit(end_img, (0, 0))
+    pygame.display.update()
+    time.sleep(3)
+    screen.fill('black')
+    pygame.display.update()
+    time.sleep(2)
+
+    # Roll Credits
+    sfx_msc.stop()
+    credits_msc.play(loops=-1)
+
+    while True:
+
+
+        # Screen FIll
+        
+        screen.fill('black')
+        credits.draw()
+        
+        # Screen Move
+        
+        credits.move(-0.50)
+        
+        # Screen Update
+        
+        clock.tick(FPS)
+        pygame.display.update()
     
-    if loss == False:
-        for event in pygame.event.get():
             
-            # Check for X Button
+        for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-
-    
-
-scene_counter = 0
-scenes = [dare_img, roll_img, end_img]
-scene = True
-
-# Ending Scene
-
-screen.fill('black')
-pygame.display.update()
-time.sleep(1)
-screen.blit(dare_img, (0, 0))
-pygame.display.update()
-time.sleep(5)
-screen.blit(roll_img, (0, 0))
-pygame.display.update()
-time.sleep(5)
-screen.blit(end_img, (0, 0))
-pygame.display.update()
-time.sleep(3)
-screen.fill('black')
-pygame.display.update()
-time.sleep(2)
-
-# Roll Credits
-
-sfx_msc.stop()
-credits_msc.play(loops=-1)
-
-while True:
-    
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-
-    # Screen FIll
-    
-    screen.fill('black')
-    credits.draw()
-    
-    # Screen Move
-    
-    credits.move(-0.50)
-    
-    # Screen Update
-    
-    clock.tick(FPS)
-    pygame.display.update()
-    
+                break
 
 
 ##### Thanks ######
