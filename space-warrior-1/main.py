@@ -32,6 +32,7 @@ air_img = pygame.image.load('assets/air.png')
 # sounds
 
 backround_msc = pygame.mixer.Sound('sound/background.wav')
+collect_sfx = pygame.mixer.Sound('sound/collect.wav')
 backround_msc.play(-1)
 
 # setup screen
@@ -183,6 +184,7 @@ class Oxygen:
         if collide:
             self.x = WIDTH * 2
             self.y = random.randint(0, HEIGHT)
+            return True
 # objects
 
 player = Player(100, HEIGHT // 2, player_img)
@@ -207,13 +209,17 @@ while run:
         for obstacle in obstacles:
             obstacle.draw()
     hearts.draw(lives, loss)
-    oxygen_bar.draw()
-    air.draw()
+
+    if boss_fight == False:
+        air.draw()
+        oxygen_bar.draw()
     
     # move screen
     player.move(pygame.key.get_pressed(), 4)
     alien.move()
-    air.move()
+    
+    if boss_fight == False:
+        air.move()
     
     if air.x < air.width * -1:
         air.x = WIDTH * 2
@@ -236,8 +242,12 @@ while run:
         
     # lose oxygen
     
-    oxygen_bar.decrease_power()
-    
+    if boss_fight == False:
+        oxygen_bar.decrease_power()
+    else:
+        oxygen_bar.power = 200
+        oxygen_bar.draw()
+        
     # collision
     if len(obstacles) > 0:
         if player.collision(obstacles)[0] == alien.rect and player.collision(obstacles)[1] == True:
@@ -246,7 +256,14 @@ while run:
             player.y = HEIGHT // 2
             if lives == 0:
                 loss = True
-    if oxygen_bar.power == 0:
+                
+    air.collected(player.rect)
+    
+    if air.collected(player.rect):
+        oxygen_bar.power = 200
+        collect_sfx.play()
+        
+    if oxygen_bar.power < 0:
         loss = True
         
     # end game
