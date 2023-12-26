@@ -321,14 +321,6 @@ run = True
 # Main Loop
 
 while run:
-
-    # Event Handler
-    for event in pygame.event.get():
-        
-        # Check for X Button
-        if event.type == pygame.QUIT:
-            pygame.quit()
-
     # Candy score
     
     score_txt = font.render(f'{score}', True, (0, 0, 0))
@@ -428,7 +420,16 @@ while run:
         screen.blit(lose_txt, (WIDTH // 2 - 200, HEIGHT // 2))
         if loss_timer > 2:
                 pygame.quit()
-print('nice')
+
+    # Event Handler
+    
+    if loss == False:
+        for event in pygame.event.get():
+            
+            # Check for X Button
+            if event.type == pygame.QUIT:
+                pygame.quit()
+
     
 
 scene_counter = 0

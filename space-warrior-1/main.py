@@ -27,6 +27,7 @@ level_img = pygame.transform.scale(pygame.image.load('assets/level.png'), (10000
 one_life_img = pygame.image.load('assets/1 lives.png')
 two_life_img = pygame.image.load('assets/2 lives.png')
 three_life_img = pygame.image.load('assets/3 lives.png')
+air_img = pygame.image.load('assets/air.png')
 
 # sounds
 
@@ -159,7 +160,29 @@ class Bar:
             self.width = self.power
             
             
-
+class Oxygen:
+    
+    def __init__(self, x, y, img):
+        self.x = x
+        self.y = y
+        self.img = img
+        self.width = self.img.get_width()
+        self.height = self.img.get_height()
+        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        
+    def draw(self):
+        screen.blit(self.img, (self.x, self.y))
+        
+    def move(self):
+        self.x -= 5
+        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        
+    def collected(self, player_rect):
+        collide = pygame.Rect.colliderect(self.rect, player_rect)
+        
+        if collide:
+            self.x = WIDTH * 2
+            self.y = random.randint(0, HEIGHT)
 # objects
 
 player = Player(100, HEIGHT // 2, player_img)
@@ -168,6 +191,7 @@ obstacles = [alien]
 level = ScrollingSurface(0, 0, level_img)
 hearts = Lives(10, 10, [one_life_img, two_life_img, three_life_img])
 oxygen_bar = Bar(300, 30, 200, 30, 200)
+air = Oxygen(WIDTH, random.randint(0, HEIGHT), air_img)
 
 # main loop
 
@@ -184,11 +208,17 @@ while run:
             obstacle.draw()
     hearts.draw(lives, loss)
     oxygen_bar.draw()
+    air.draw()
     
     # move screen
     player.move(pygame.key.get_pressed(), 4)
     alien.move()
+    air.move()
     
+    if air.x < air.width * -1:
+        air.x = WIDTH * 2
+        air.y = random.randint(0, HEIGHT)
+        
     if level.x < -8500:
         boss_fight = True
         level.move(0, 0)
