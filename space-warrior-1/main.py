@@ -150,7 +150,7 @@ class Bar:
 
         
     def decrease_power(self):
-        self.power -= 0.50
+        self.power -= 0.45
         self.width = self.power
     
     def increase_power(self):
