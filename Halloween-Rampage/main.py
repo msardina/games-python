@@ -428,6 +428,7 @@ while run:
         screen.blit(lose_txt, (WIDTH // 2 - 200, HEIGHT // 2))
         if loss_timer > 2:
                 pygame.quit()
+print('nice')
     
 
 scene_counter = 0
