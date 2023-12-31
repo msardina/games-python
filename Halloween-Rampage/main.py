@@ -61,6 +61,8 @@ scene = False
 WIDTH = title_img.get_width()
 HEIGHT = title_img.get_height()
 FPS = 60
+BOSS_FIGHT_NUM = 500
+WIN_NUM = 1000
 # Setup Screen
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -72,9 +74,7 @@ font = pygame.font.SysFont(None, 50)
 title_font = pygame.font.SysFont(None, 100)
 
 # Classes
-
-class Button:
-    
+class Button:    
     def __init__(self, x, y, hover_img, normal_img):
         self.clicked = False
         self.x = x
@@ -269,8 +269,10 @@ class Lives:
             lives = lives - 1
         screen.blit(self.imgs[lives], (self.x, self.y))
         
+        
+        
+        
 # Objects
-
 start_button = Button(WIDTH // 2 - 70, HEIGHT // 2, start_hover_btn, start_btn)
 blank_button = Button(WIDTH // 2 - 70, HEIGHT // 2 + 100, blank_hover_btn, blank_btn)
 blank_button_2 = Button(WIDTH // 2 - 70, HEIGHT // 2 + 200, blank_hover_btn, blank_btn)
@@ -286,156 +288,150 @@ king_pumpkin = Boss(WIDTH // 2 - 45, 0, king_pumpkin_img)
 credits = ScrollingSurface(0, HEIGHT - 50, credits_img)
 hearts = Lives(WIDTH - 200, HEIGHT - 100, [one_life_img, two_lives_img, three_lives_img])
 
-# Start Loop
+# Def
+def run_title_screen():
+    start = True
+    while start:
 
-while start:
-
-    # Event Handler
-    for event in pygame.event.get():
-        
-        # Check for X Button
-        if event.type == pygame.QUIT:
-            pygame.quit()
-
-    # Draw
-
-    screen.blit(title_img, (0, 0))
-    
-    for button in buttons:  
-        button.update()
-    
-    if start_button.is_clicked():
-        start = False
-        run = True
-
-    # Update
-    
-    pygame.display.update()
-
-
-# Fill black
-screen.fill('black')
-
-run = True
-
-# Main Loop
-while run:
-    # Event Handler
-    if loss == False:
+        # Event Handler
         for event in pygame.event.get():
+            
             # Check for X Button
             if event.type == pygame.QUIT:
                 pygame.quit()
-                run = False
-                continue
+
+        # 
+        screen.blit(title_img, (0, 0))
+        
+        for button in buttons:  
+            button.update()
+        
+        if start_button.is_clicked():
+            start = False
+            run = True
+
+        # Update
+        
+        pygame.display.update()
+
+def game():
+    loss = False
+    score = 0
+    lives = 3
+    loss_timer = 0
+    
+    # Main Loop
+    while True:
+        # Event Handler
+        if loss == False:
+            for event in pygame.event.get():
+                # Check for X Button
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    exit(0)
+                    
+        # Candy score    
+        score_txt = font.render(f'{score}', True, (0, 0, 0))
+        lose_txt = title_font.render(f'GAME OVER', True, (0, 0, 0))
+        
+        # Draw    
+        road.draw()
+        road_2.draw()
+        
+        if score > BOSS_FIGHT_NUM:
+            king_pumpkin.draw()
+            
+        if score > WIN_NUM:
+            return False
+        
+        if boss_fight == False:
+            car.draw()
+            sign.draw()
+            pumpkin.draw()
+            car.collide(king_pumpkin.rect)
+            car.collide(player.rect)
+            sign.collide(king_pumpkin.rect)
+            sign.collide(player.rect)
+            pumpkin.collide(king_pumpkin.rect)
+            pumpkin.collide(player.rect)
+            
+            if player.collide(king_pumpkin.rect):
+                loss = True
                 
-    # Candy score    
-    score_txt = font.render(f'{score}', True, (0, 0, 0))
-    lose_txt = title_font.render(f'GAME OVER', True, (0, 0, 0))
-    
-    # Draw    
-    road.draw()
-    road_2.draw()
-    
-    if score > 500:
-        king_pumpkin.draw()
+            for candy in candys:
+
+                candy.draw()
+                candy.move()
+                candy.collide(player.rect)
+                candy.collide(car.rect)
+                candy.collide(pumpkin.rect)
+                candy.collide(sign.rect)
+                candy.collide(king_pumpkin.rect)
+                if candy.collide(player.rect):
+                    score += 5
+                    
+                    
+                
+        player.draw()
+        hearts.draw(lives, loss)
+        screen.blit(score_txt, (130, HEIGHT - 100))
+        screen.blit(candy_img, (30, HEIGHT - 100))
+            
+        # Move
         
-    if score > 1000:
-        run = False
-        continue
-    
-    if boss_fight == False:
-        car.draw()
-        sign.draw()
-        pumpkin.draw()
-        car.collide(king_pumpkin.rect)
-        car.collide(player.rect)
-        sign.collide(king_pumpkin.rect)
-        sign.collide(player.rect)
-        pumpkin.collide(king_pumpkin.rect)
-        pumpkin.collide(player.rect)
-        
-        if player.collide(king_pumpkin.rect):
+
+        player.move(pygame.key.get_pressed())
+        if player.collide(car.rect):
+            lives -= 1
+            player.x = WIDTH // 2
+            player.y = 600
+            hit_snd.play()
+            
+        if player.collide(sign.rect):
+            lives -= 1
+            player.x = WIDTH // 2
+            player.y = 600
+            hit_snd.play()
+            
+        if player.collide(pumpkin.rect):
+            lives -= 1
+            player.x = WIDTH // 2
+            player.y = 600
+            hit_snd.play()
+            
+        if lives == 0:
             loss = True
+
             
-        for candy in candys:
-
-            candy.draw()
-            candy.move()
-            candy.collide(player.rect)
-            candy.collide(car.rect)
-            candy.collide(pumpkin.rect)
-            candy.collide(sign.rect)
-            candy.collide(king_pumpkin.rect)
-            if candy.collide(player.rect):
-                score += 5
-                
-                
-            
-    player.draw()
-    hearts.draw(lives, loss)
-    screen.blit(score_txt, (130, HEIGHT - 100))
-    screen.blit(candy_img, (30, HEIGHT - 100))
+        road.move(2)
+        road_2.move(2)
+        road.off_screen()
+        road_2.off_screen()
+        car.move()
+        car.off_level()
+        sign.move()
+        sign.off_level()
+        pumpkin.move()
+        pumpkin.off_level()
+                    
+        # Update
         
-    # Move
-    
-
-    player.move(pygame.key.get_pressed())
-    if player.collide(car.rect):
-        lives -= 1
-        player.x = WIDTH // 2
-        player.y = 600
-        hit_snd.play()
+        clock.tick(FPS)
+        pygame.display.update()
         
-    if player.collide(sign.rect):
-        lives -= 1
-        player.x = WIDTH // 2
-        player.y = 600
-        hit_snd.play()
+        # Death Timer
         
-    if player.collide(pumpkin.rect):
-        lives -= 1
-        player.x = WIDTH // 2
-        player.y = 600
-        hit_snd.play()
-        
-    if lives == 0:
-        loss = True
-
-        
-    road.move(2)
-    road_2.move(2)
-    road.off_screen()
-    road_2.off_screen()
-    car.move()
-    car.off_level()
-    sign.move()
-    sign.off_level()
-    pumpkin.move()
-    pumpkin.off_level()
-                
-    # Update
-    
-    clock.tick(FPS)
-    pygame.display.update()
-    
-    # Death Timer
-    
-    if loss == True:
-        lose_snd.play()
-        loss_timer += 0.010
-        screen.blit(lose_txt, (WIDTH // 2 - 200, HEIGHT // 2))
-        if loss_timer > 2:
-                pygame.quit()
-                run = False
-
+        if loss == True:
+            lose_snd.play()
+            loss_timer += 0.010
+            screen.blit(lose_txt, (WIDTH // 2 - 200, HEIGHT // 2))
+            if loss_timer > 2:
+                    pygame.quit()
+                    return True
 
 # if the main loop is exited because of winning
 
-if not loss:
-    scene_counter = 0
-    scenes = [dare_img, roll_img, end_img]
-    scene = True
+def run_the_credits():
 
     # Ending Scene
 
@@ -482,6 +478,19 @@ if not loss:
                 pygame.quit()
                 break
 
+
+
+# Run Game
+
+# Do the Start Screen
+run_title_screen()
+
+# Run the Game
+loss = game()
+
+# Make the Credits roll if won!
+if not loss:
+    run_the_credits()
 
 ##### Thanks ######
 
