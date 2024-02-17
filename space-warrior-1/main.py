@@ -20,6 +20,7 @@ lives = 3
 boss_fight = False
 oxygen = 100
 game_over = False
+speed_of_screen = 5
 
 # imgs
 alien_img = pygame.image.load('assets/alien.png')
@@ -30,6 +31,8 @@ two_life_img = pygame.image.load('assets/2 lives.png')
 three_life_img = pygame.image.load('assets/3 lives.png')
 air_img = pygame.image.load('assets/air.png')
 game_over_screen = pygame.image.load('assets/game over.png')
+star_img = pygame.image.load('assets/star.png')
+black_hole_img = pygame.image.load('assets/black hole.png')
 
 # sounds
 
@@ -83,6 +86,7 @@ class Player:
     def collision(self, obstacles):
         
         for obstacle in obstacles:
+            print(obstacle)
             collide = pygame.Rect.colliderect(self.rect, obstacle.rect)
             collision_data = [obstacle, collide]
             return collision_data
@@ -99,8 +103,13 @@ class Obstacle:
         
     def draw(self):
         screen.blit(self.img, (self.x, self.y))
+        pygame.draw.rect(screen, (0, 0, 0), self.rect)
+    def move(self, speed_of_screen):
+        self.x -= speed_of_screen
         
-    def move(self):
+        if self.x < self.width * -1:
+            self.x = (WIDTH * 2) + random.randint(-50, 50)
+            self.y = random.randint(0, HEIGHT)
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
 
 class ScrollingSurface:
@@ -193,7 +202,10 @@ class Oxygen:
 
 player = Player(100, HEIGHT // 2, player_img)
 alien = Obstacle(WIDTH // 2, HEIGHT // 2, alien_img)
-obstacles = [alien]
+alien2 = Obstacle(1000, random.randint(0, HEIGHT), alien_img)
+evil_star = Obstacle(WIDTH - 50, random.randint(0, HEIGHT), star_img)
+black_hole = Obstacle(WIDTH + 100, random.randint(0, HEIGHT), black_hole_img)
+obstacles = [alien, alien2]
 level = ScrollingSurface(0, 0, level_img)
 hearts = Lives(10, 10, [one_life_img, two_life_img, three_life_img])
 oxygen_bar = Bar(300, 30, 200, 30, 200)
@@ -220,8 +232,10 @@ while run:
     
     # move screen
     player.move(pygame.key.get_pressed(), 4)
-    alien.move()
-    
+    alien.move(speed_of_screen)
+    alien2.move(speed_of_screen)
+    black_hole.move(speed_of_screen)
+    evil_star.move(speed_of_screen)
     if boss_fight == False:
         air.move()
     
@@ -233,11 +247,14 @@ while run:
         boss_fight = True
         level.move(0, 0)
     elif player.x > WIDTH - 400:
-        level.move(-10, 0)     
+        level.move(-10, 0)
+        speed_of_screen = 10
     elif player.x < 200:
         level.move(-3, 0)
+        speed_of_screen = 3
     else:
         level.move(-5, 0)
+        speed_of_screen = 5
 
     # clear screen boss fight
     
@@ -253,14 +270,16 @@ while run:
         oxygen_bar.draw()
         
     # collision
+    print(len(obstacles))
     if len(obstacles) > 0:
         if player.collision(obstacles)[0] == alien.rect and player.collision(obstacles)[1] == True:
+            print('colide')
             lives -= 1
             player.x = 100
             player.y = HEIGHT // 2
             if lives == 0:
                 loss = True
-                
+
     air.collected(player.rect)
     
     if air.collected(player.rect):
@@ -269,7 +288,6 @@ while run:
         
     if oxygen_bar.power < 0:
         loss = True
-        no_air.play()
         
     # end game
     
