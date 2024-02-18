@@ -118,6 +118,7 @@ class ScrollingSurface:
 #title screen
 play = font.render(f'Press Enter to Play', True, (0, 0, 0))
 
+
 while start:
     
     for event in pygame.event.get():
@@ -153,7 +154,9 @@ while run:
             run = False
     
     #score
-    
+    score += 1
+    score_txt = title_font.render(f'{score}', True, (0, 0, 0))
+
     #draw screen
     screen.fill((0,206,209))
     screen.blit(background_img, (0, 0))
@@ -161,6 +164,7 @@ while run:
     floor2.draw()
     cactus.draw()
     player.draw()
+    screen.blit(score_txt, (0, 0))
 
     
     #move screen
