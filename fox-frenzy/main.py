@@ -10,6 +10,7 @@ title_screen_img = pygame.image.load('assets/title-screen.png')
 background_img = pygame.image.load('assets/background.png')
 fox_1 = pygame.image.load('assets/fox1.png')
 fox_2 = pygame.image.load('assets/fox2.png')
+cactus_img = pygame.image.load('assets/cactus.png')
 
 #vars
 start = True
@@ -76,6 +77,26 @@ class Player:
                 self.dy = -13
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
         
+class Cactus:
+    def __init__(self, x, y, img):
+        self.x = x
+        self.y = y
+        self.img = img
+        self.width = self.img.get_width()
+        self.height = self.img.get_height()
+        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        
+    def draw(self):
+        screen.blit(self.img, (self.x, self.y))
+        
+    def move(self):
+        self.x -= 10
+        if self.x < 0 - self.width:
+            self.x = WIDTH
+        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+
+
+            
 #title screen
 play = font.render(f'Press Enter to Play', True, (0, 0, 0))
 
@@ -101,7 +122,8 @@ while start:
     pygame.display.update()
 
 #objects
-player = Player(50, HEIGHT - 600, [fox_1, fox_2])
+player = Player(50, HEIGHT - 700, [fox_1, fox_2])
+cactus = Cactus(WIDTH, HEIGHT - 250, cactus_img)
 
 # game loop
 while run:
@@ -113,9 +135,11 @@ while run:
     #draw screen
     screen.blit(background_img, (0, 0))
     player.draw()
+    cactus.draw()
     
     #move screen
     player.move(pygame.key.get_pressed())
+    cactus.move()
     
     #update
     clock.tick(FPS)
