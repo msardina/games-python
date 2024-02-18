@@ -7,6 +7,7 @@ mixer.init()
 
 #imgs
 title_screen_img = pygame.image.load('assets/title-screen.png')
+background_img = pygame.image.load('assets/background.png')
 fox_1 = pygame.image.load('assets/fox1.png')
 fox_2 = pygame.image.load('assets/fox2.png')
 
@@ -65,12 +66,12 @@ class Player:
         
 
                 
-        if self.y < (HEIGHT - self.height):
+        if self.y < ((HEIGHT - self.height) - 100):
             self.dy += GRAVITY
-        if self.y > (HEIGHT - self.height):
-            self.y = (HEIGHT - self.height)
+        if self.y > ((HEIGHT - self.height) - 100):
+            self.y = ((HEIGHT - self.height) - 100)
             
-        if self.y == (HEIGHT - self.height):
+        if self.y == ((HEIGHT - self.height) - 100):
             if keys[pygame.K_UP]:
                 self.dy = -13
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
@@ -100,7 +101,7 @@ while start:
     pygame.display.update()
 
 #objects
-player = Player(50, HEIGHT - 500, [fox_1, fox_2])
+player = Player(50, HEIGHT - 600, [fox_1, fox_2])
 
 # game loop
 while run:
@@ -110,7 +111,7 @@ while run:
             run = False
             
     #draw screen
-    screen.fill((50, 50, 100))
+    screen.blit(background_img, (0, 0))
     player.draw()
     
     #move screen
