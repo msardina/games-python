@@ -45,12 +45,12 @@ class Player:
         self.x = x
         self.y = y
         self.dy = 0
-        self.width = imgs[0].get_width()
+        self.width = imgs[0].get_width() // 2
         self.height = imgs[0].get_height()
         self.imgs = imgs
         self.frame = 0
         self.elapsed = 0
-        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        self.rect = pygame.Rect(self.x + self.width, self.y, self.width, self.height)
         
     def draw(self):
         self.elapsed += 0.10
@@ -66,8 +66,6 @@ class Player:
         
     def move(self, keys):
         self.y += self.dy
-        
-
                 
         if self.y < ((HEIGHT - self.height) - 100):
             self.dy += GRAVITY
@@ -77,7 +75,7 @@ class Player:
         if self.y == ((HEIGHT - self.height) - 100):
             if keys[pygame.K_UP]:
                 self.dy = -13
-        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        self.rect = pygame.Rect(self.x + self.width, self.y, self.width, self.height)
         
 class Cactus:
     def __init__(self, x, y, img):
@@ -173,7 +171,10 @@ while run:
     floor2.move()
     cactus.move()
 
-    
+    #collisions
+    if pygame.Rect.colliderect(player.rect, cactus.rect):
+        run = False
+        
     #update
     clock.tick(FPS)
     pygame.display.update()
