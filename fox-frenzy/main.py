@@ -11,10 +11,12 @@ background_img = pygame.image.load('assets/background.png')
 fox_1 = pygame.image.load('assets/fox1.png')
 fox_2 = pygame.image.load('assets/fox2.png')
 cactus_img = pygame.image.load('assets/cactus.png')
+floor_img = pygame.image.load('assets/floor.png')
 
 #vars
 start = True
 run = False
+score = 0
 
 #const
 WIDTH, HEIGHT = title_screen_img.get_width(), title_screen_img.get_height()
@@ -95,7 +97,23 @@ class Cactus:
             self.x = WIDTH
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
 
-
+class ScrollingSurface:
+    def __init__(self, x, y, img):
+        self.x = x
+        self.y = y
+        self.img = img
+        self.width = self.img.get_width()
+        self.height = self.img.get_height()
+        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        
+    def draw(self):
+        screen.blit(self.img, (self.x, self.y))
+        
+    def move(self):
+        self.x -= 10
+        if self.x < 0 - self.width:
+            self.x = WIDTH
+        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
             
 #title screen
 play = font.render(f'Press Enter to Play', True, (0, 0, 0))
@@ -122,8 +140,10 @@ while start:
     pygame.display.update()
 
 #objects
-player = Player(50, HEIGHT - 700, [fox_1, fox_2])
+player = Player(50, HEIGHT - 200, [fox_1, fox_2])
 cactus = Cactus(WIDTH, HEIGHT - 250, cactus_img)
+floor1 = ScrollingSurface(0, HEIGHT - floor_img.get_height(), floor_img)
+floor2 = ScrollingSurface(WIDTH, HEIGHT - floor_img.get_height(), floor_img)
 
 # game loop
 while run:
@@ -131,15 +151,24 @@ while run:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
-            
+    
+    #score
+    
     #draw screen
+    screen.fill((0,206,209))
     screen.blit(background_img, (0, 0))
-    player.draw()
+    floor1.draw()
+    floor2.draw()
     cactus.draw()
+    player.draw()
+
     
     #move screen
     player.move(pygame.key.get_pressed())
+    floor1.move()
+    floor2.move()
     cactus.move()
+
     
     #update
     clock.tick(FPS)
