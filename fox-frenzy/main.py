@@ -13,11 +13,6 @@ fox_2 = pygame.image.load('assets/fox2.png')
 cactus_img = pygame.image.load('assets/cactus.png')
 floor_img = pygame.image.load('assets/floor.png')
 
-#vars
-start = True
-run = False
-score = 0
-
 #const
 WIDTH, HEIGHT = title_screen_img.get_width(), title_screen_img.get_height()
 GRAVITY = 0.50
@@ -29,6 +24,8 @@ pygame.display.set_caption('FOX FRENZY BETA')
 
 #music
 retro_music = pygame.mixer.Sound('sound/retro.wav')
+jump = pygame.mixer.Sound('sound/jump.wav')
+die = pygame.mixer.Sound('sound/die.wav')
 retro_music.play(-1)
 
 #font
@@ -45,12 +42,13 @@ class Player:
         self.x = x
         self.y = y
         self.dy = 0
-        self.width = imgs[0].get_width() // 2
+        self.width = imgs[0].get_width() // 3
         self.height = imgs[0].get_height()
         self.imgs = imgs
         self.frame = 0
         self.elapsed = 0
-        self.rect = pygame.Rect(self.x + self.width, self.y, self.width, self.height)
+        self.rect = pygame.Rect(self.x + self.width, self.y + self.height, self.width, self.height)
+
         
     def draw(self):
         self.elapsed += 0.10
@@ -63,6 +61,7 @@ class Player:
             self.elapsed = 0
             
         screen.blit(self.imgs[self.frame], (self.x, self.y))
+        #pygame.draw.rect(screen, (0, 0, 0), self.rect)
         
     def move(self, keys):
         self.y += self.dy
@@ -73,8 +72,10 @@ class Player:
             self.y = ((HEIGHT - self.height) - 100)
             
         if self.y == ((HEIGHT - self.height) - 100):
-            if keys[pygame.K_UP]:
+            if keys[pygame.K_UP] or keys[pygame.K_SPACE]:
                 self.dy = -13
+                jump.play()
+                
         self.rect = pygame.Rect(self.x + self.width, self.y, self.width, self.height)
         
 class Cactus:
@@ -112,72 +113,98 @@ class ScrollingSurface:
         if self.x < 0 - self.width:
             self.x = WIDTH
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
-            
+
 #title screen
 play = font.render(f'Press Enter to Play', True, (0, 0, 0))
+game_over = title_font.render(f'Game Over!', True, (0, 0, 0))
 
+def start_screen():
 
-while start:
+    start = True
     
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            quit()
+    while start:
+        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+                
+        #draw screen
+        screen.blit(title_screen_img, (0, 0))
+        screen.blit(play, (0, HEIGHT - 50))
+        
+        #exit
+        keys = pygame.key.get_pressed()
+        
+        if keys[pygame.K_RETURN]:
+            start = False
+            run = True
             
-    #draw screen
-    screen.blit(title_screen_img, (0, 0))
-    screen.blit(play, (0, HEIGHT - 50))
+        #update
+        pygame.display.update()
+
+
+def game():
     
-    #exit
-    keys = pygame.key.get_pressed()
+
+    #objects
+    player = Player(50, HEIGHT - 200, [fox_1, fox_2])
+    cactus = Cactus(WIDTH, HEIGHT - 250, cactus_img)
+    floor1 = ScrollingSurface(0, HEIGHT - floor_img.get_height(), floor_img)
+    floor2 = ScrollingSurface(WIDTH, HEIGHT - floor_img.get_height(), floor_img)
     
-    if keys[pygame.K_RETURN]:
-        start = False
-        run = True
+    #vars
+    run = True
+    score = 0
+    
+    # game loop
+    while run:
         
-    #update
-    pygame.display.update()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+        
+        #score
+        score += 1
+        score_txt = title_font.render(f'{score}', True, (0, 0, 0))
 
-#objects
-player = Player(50, HEIGHT - 200, [fox_1, fox_2])
-cactus = Cactus(WIDTH, HEIGHT - 250, cactus_img)
-floor1 = ScrollingSurface(0, HEIGHT - floor_img.get_height(), floor_img)
-floor2 = ScrollingSurface(WIDTH, HEIGHT - floor_img.get_height(), floor_img)
+        #draw screen
+        screen.fill((0,206,209))
+        screen.blit(background_img, (0, 0))
+        floor1.draw()
+        floor2.draw()
+        cactus.draw()
+        player.draw()
+        screen.blit(score_txt, (0, 0))
 
-# game loop
-while run:
-    
+        
+        #move screen
+        player.move(pygame.key.get_pressed())
+        floor1.move()
+        floor2.move()
+        cactus.move()
+
+        #collisions
+        if pygame.Rect.colliderect(player.rect, cactus.rect):
+            #play gameover sound and display text
+            screen.blit(game_over, (WIDTH // 2 - (game_over.get_width() // 2), 100))
+            pygame.display.update()
+            die.play()
+            time.sleep(3)
+            run = False
+            
+        #update
+        clock.tick(FPS)
+        pygame.display.update()
+
+game_running = True
+while game_running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            run = False
-    
-    #score
-    score += 1
-    score_txt = title_font.render(f'{score}', True, (0, 0, 0))
-
-    #draw screen
-    screen.fill((0,206,209))
-    screen.blit(background_img, (0, 0))
-    floor1.draw()
-    floor2.draw()
-    cactus.draw()
-    player.draw()
-    screen.blit(score_txt, (0, 0))
-
-    
-    #move screen
-    player.move(pygame.key.get_pressed())
-    floor1.move()
-    floor2.move()
-    cactus.move()
-
-    #collisions
-    if pygame.Rect.colliderect(player.rect, cactus.rect):
-        run = False
-        
-    #update
-    clock.tick(FPS)
-    pygame.display.update()
+            game_running = False
+            
+    start_screen()
+    game()
     
 #quit the game
 pygame.quit()
